@@ -393,8 +393,8 @@ public class InCallActivity extends TransactionSafeFragmentActivity
     common.showPostCharWaitDialog(callId, chars);
   }
 
-  public void maybeShowErrorDialogOnDisconnect(DisconnectMessage disconnectMessage) {
-    common.maybeShowErrorDialogOnDisconnect(disconnectMessage);
+  public void maybeShowErrorDialogOnDisconnect(DialerCall call) {
+    common.maybeShowErrorDialogOnDisconnect(call);
   }
 
   public void dismissPendingDialogs() {

@@ -493,14 +493,23 @@ public class InCallActivityCommon {
     }
   }
 
-  public void maybeShowErrorDialogOnDisconnect(DisconnectMessage disconnectMessage) {
+  public void maybeShowErrorDialogOnDisconnect(DialerCall call) {
+    DisconnectCause cause = call.getDisconnectCause();
     LogUtil.i(
         "InCallActivityCommon.maybeShowErrorDialogOnDisconnect",
         "disconnect cause: %s",
         disconnectMessage);
 
     if (!inCallActivity.isFinishing()) {
-      if (disconnectMessage.dialog != null) {
+      if (call.wasUnansweredForwarded()) {
+        Pair<Dialog, CharSequence> pair = getDisconnectErrorDialog(inCallActivity,
+                inCallActivity.getString(R.string.callUnanswered_forwarded));
+        showErrorDialog(pair.first, pair.second);
+      } else if (call.missedBecauseIncomingCallsBarredRemotely()) {
+        Pair<Dialog, CharSequence> pair = getDisconnectErrorDialog(inCallActivity,
+                inCallActivity.getString(R.string.callFailed_incoming_cb_enabled));
+        showErrorDialog(pair.first, pair.second);
+      } else if (disconnectMessage.dialog != null) {
         showErrorDialog(disconnectMessage.dialog, disconnectMessage.toastMessage);
       }
     }
@@ -548,6 +557,21 @@ public class InCallActivityCommon {
           "dismissing InternationalCallOnWifiDialogFragment");
       internationalCallOnWifiFragment.dismiss();
     }
+  }
+
+  private static Pair<Dialog, CharSequence> getDisconnectErrorDialog(
+      @NonNull Context context, @NonNull DisconnectCause cause) {
+    return getDisconnectErrorDialog(context, cause.getDescription());
+  }
+
+  private static Pair<Dialog, CharSequence> getDisconnectErrorDialog(
+      @NonNull Context context, @NonNull CharSequence message) {
+    Dialog dialog =
+        new AlertDialog.Builder(context)
+            .setMessage(message)
+            .setPositiveButton(android.R.string.ok, null)
+            .create();
+    return new Pair<>(dialog, message);
   }
 
   private void showErrorDialog(Dialog dialog, CharSequence message) {
