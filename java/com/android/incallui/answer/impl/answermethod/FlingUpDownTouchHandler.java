@@ -368,21 +368,28 @@ class FlingUpDownTouchHandler implements OnTouchListener {
 
   private boolean isFalseTouch() {
     if (falsingManager != null && falsingManager.isEnabled()) {
+      LogUtil.e("FlingUpDownTouchHandler.isFalseTouch", "falsingManager.isEnabled() was true");
       if (falsingManager.isFalseTouch()) {
+        LogUtil.e("FlingUpDownTouchHandler.isFalseTouch", "falsingManager.isFalseTouch() was true");
         if (touchUsesFalsing) {
-          LogUtil.i("FlingUpDownTouchHandler.isFalseTouch", "rejecting false touch");
-          return true;
+          LogUtil.e("FlingUpDownTouchHandler.isFalseTouch", "rejecting false touch");
+          LogUtil.e("FlingUpDownTouchHandler.isFalseTouch", "WOULD HAVE RETURNED A FALSE TOUCH HERE!");
+          return false;
         } else {
-          LogUtil.i(
+          LogUtil.e(
               "FlingUpDownTouchHandler.isFalseTouch",
               "Suspected false touch, but not using false touch rejection for this gesture");
           return false;
         }
       } else {
+        LogUtil.e("FlingUpDownTouchHandler.isFalseTouch", "falsingManager.isFalseTouch() was false");
         return false;
       }
     }
-    return !touchAboveFalsingThreshold;
+    LogUtil.e("FlingUpDownTouchHandler.isFalseTouch", "falsingManager.isEnabled() was false and touchAboveFalsingThreshold was " + (touchAboveFalsingThreshold ? "true" : "false"));
+    if (!touchAboveFalsingThreshold)
+      LogUtil.e("FlingUpDownTouchHandler.isFalseTouch", "WOULD HAVE RETURNED A FALSE TOUCH HERE!");
+    return false;
   }
 
   private void trackMovement(MotionEvent event) {
